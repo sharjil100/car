@@ -1,4 +1,5 @@
 import ShowroomHero from "@/components/showroom/ShowroomHero";
+import FeaturedFan from "@/components/showroom/FeaturedFan";
 import CategoryShowcase from "@/components/showroom/CategoryShowcase";
 import FeaturedVehicle from "@/components/showroom/FeaturedVehicle";
 import CarGrid from "@/components/showroom/CarGrid";
@@ -10,6 +11,7 @@ export default function Page() {
   return (
     <main>
       <ShowroomHero />
+      <FeaturedFan />
       <CategoryShowcase />
       <FeaturedVehicle />
       <CarGrid />
