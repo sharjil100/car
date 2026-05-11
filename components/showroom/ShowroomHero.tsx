@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import {
+  AnimatePresence,
   motion,
   useMotionTemplate,
   useMotionValue,
@@ -21,6 +22,25 @@ export default function ShowroomHero() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [hovering, setHovering] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Lock body scroll while the mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  // Close the menu on Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   // Raw cursor position relative to the car wrapper
   const x = useMotionValue(0);
@@ -168,26 +188,91 @@ export default function ShowroomHero() {
           <a href="#collection" className="transition hover:text-white">
             Collection
           </a>
-          <a href="#" className="transition hover:text-white">
+          <a href="#about" className="transition hover:text-white">
             About
           </a>
-          <a href="#" className="transition hover:text-white">
+          <a href="#contact" className="transition hover:text-white">
             Contact
           </a>
         </nav>
         <a
           href="#collection"
-          className="rounded-full border border-white/15 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-white/70 transition hover:border-white/35 hover:text-white md:flex hidden"
+          className="hidden rounded-full border border-white/15 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-white/70 transition hover:border-white/35 hover:text-white md:inline-flex"
         >
           Browse All
         </a>
         <button
-          aria-label="Menu"
-          className="md:hidden flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white/80"
+          aria-label="Open menu"
+          onClick={() => setMenuOpen(true)}
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-white/35 hover:text-white md:hidden"
         >
-          <span className="block h-px w-4 bg-current" />
+          <span className="flex flex-col gap-1.5">
+            <span className="block h-px w-4 bg-current" />
+            <span className="block h-px w-4 bg-current" />
+          </span>
         </button>
       </header>
+
+      {/* Mobile menu overlay */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[80] flex flex-col bg-[#04060a]/95 backdrop-blur-md md:hidden"
+          >
+            <div className="flex items-center justify-between px-6 py-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Motor Shot Cars" className="h-9 w-auto" />
+              <button
+                aria-label="Close menu"
+                onClick={() => setMenuOpen(false)}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-white/35 hover:text-white"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <nav className="flex flex-1 flex-col items-center justify-center gap-8 px-6 text-center">
+              {[
+                { label: "Collection", href: "#collection" },
+                { label: "About", href: "#about" },
+                { label: "Contact", href: "#contact" },
+              ].map((item, i) => (
+                <motion.a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
+                  className="text-3xl font-bold uppercase tracking-[0.18em] text-white/85 transition hover:text-white"
+                >
+                  {item.label}
+                </motion.a>
+              ))}
+            </nav>
+
+            <div className="px-6 pb-10 text-center">
+              <a
+                href="tel:+8801799237222"
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.25em] text-black transition hover:bg-white/90"
+              >
+                Call 01799-237222
+              </a>
+              <p className="mt-4 text-[10px] uppercase tracking-[0.32em] text-white/30">
+                Banani, Dhaka
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero headline — sits behind the car, car overlaps it */}
       <div className="pointer-events-none absolute left-0 right-0 top-[22%] z-10 px-6 text-center sm:top-[20%]">
@@ -203,13 +288,15 @@ export default function ShowroomHero() {
         </h1>
       </div>
 
-      {/* Car wrapper — both image layers live here for pixel-perfect alignment */}
+      {/* Car wrapper — both image layers live here for pixel-perfect alignment.
+          On mobile the wrapper extends beyond the viewport edges so `object-contain`
+          scales the car larger than the viewport width and the car lifts higher up. */}
       <div
         ref={wrapperRef}
         onMouseEnter={handleEnter}
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
-        className="absolute inset-x-0 bottom-[1%] z-20 mx-auto h-[88vh] max-h-[1000px] w-full max-w-[2300px] sm:bottom-[-5%]"
+        className="absolute inset-x-[-40%] bottom-[12%] z-20 h-[42vh] sm:inset-x-0 sm:bottom-[-5%] sm:mx-auto sm:h-[88vh] sm:w-full sm:max-w-[2300px] sm:max-h-[1000px]"
       >
         {/* Wet-floor reflection — flipped copy hinged at the wheel line */}
         <div

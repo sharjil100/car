@@ -63,7 +63,7 @@ const CONTACTS: ContactItem[] = [
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-[#03050a]">
+    <footer id="contact" className="relative overflow-hidden bg-[#03050a]">
       {/* Top ambient glow */}
       <div
         aria-hidden

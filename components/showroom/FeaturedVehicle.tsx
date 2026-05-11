@@ -101,7 +101,7 @@ export default function FeaturedVehicle() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-            className="relative h-[55vw] max-h-[520px] w-full flex-1 lg:h-[480px]"
+            className="relative h-[72vw] min-h-[280px] w-full max-w-full lg:h-[480px] lg:min-h-0 lg:flex-1"
             style={{
               background: `radial-gradient(ellipse at 50% 60%, ${car.colorHex}20 0%, transparent 60%)`,
             }}

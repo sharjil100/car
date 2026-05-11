@@ -56,7 +56,7 @@ const PILLARS: Pillar[] = [
 
 export default function WhyUs() {
   return (
-    <section className="bg-[#06070a] py-24">
+    <section id="about" className="bg-[#06070a] py-24">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-10">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
