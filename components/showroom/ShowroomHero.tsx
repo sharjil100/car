@@ -13,10 +13,9 @@ import { CARS, formatPriceBDT } from "@/data/cars";
 // Hover-reveal circle radius in px
 const MASK_RADIUS = 220;
 
-// Hero features the most expensive car in the catalogue
-const FEATURED = CARS.reduce((best, c) =>
-  c.priceMillionBDT > best.priceMillionBDT ? c : best
-);
+// Hero spotlights the Land Cruiser — Toyota's flagship and a BD favourite.
+// (Matches the silhouette of the placeholder hero PNG.)
+const FEATURED = CARS.find((c) => c.id === "lc-v8-vx-2017") ?? CARS[0];
 
 export default function ShowroomHero() {
   const wrapperRef = useRef<HTMLDivElement>(null);
